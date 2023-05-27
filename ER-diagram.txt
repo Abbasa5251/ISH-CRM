@@ -1,0 +1,15 @@
+Customer -
+	id
+	name 
+	email
+	phone
+	address
+	dues
+	payday - 0010001
+
+Transaction -
+	id
+	customer_id
+	amount
+	datetime
+
