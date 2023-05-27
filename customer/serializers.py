@@ -3,6 +3,17 @@ from rest_framework import serializers
 from customer.models import Customer
 from transaction.serializers import TransactionSerializer
 
+
+class CustomersSerializers(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Customer
+        fields = "__all__"
+    
+    def get_url(self, obj):
+        return obj.get_absolute_url()
+
 class CustomerSerializer(serializers.ModelSerializer):
     transactions = serializers.SerializerMethodField()
     transaction_count = serializers.SerializerMethodField()
@@ -29,4 +40,3 @@ class CustomerSerializer(serializers.ModelSerializer):
         for transaction in obj.transactions.all():
             amount += transaction.amount
         return amount
-    
