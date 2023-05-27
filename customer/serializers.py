@@ -6,6 +6,8 @@ from transaction.serializers import TransactionSerializer
 
 class CustomersSerializers(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
+    transaction_count = serializers.SerializerMethodField()
+    total_transaction_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Customer
@@ -13,6 +15,15 @@ class CustomersSerializers(serializers.ModelSerializer):
     
     def get_url(self, obj):
         return obj.get_absolute_url()
+
+    def get_transaction_count(self, obj):
+        return obj.transactions.all().count()
+
+    def get_total_transaction_amount(self, obj):
+        amount = 0
+        for transaction in obj.transactions.all():
+            amount += transaction.amount
+        return amount
 
 class CustomerSerializer(serializers.ModelSerializer):
     transactions = serializers.SerializerMethodField()
