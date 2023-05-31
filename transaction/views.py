@@ -3,13 +3,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from transaction.models import Transaction
-from transaction.serializers import TransactionsSerializer, CreateTransactionSerializer
+from transaction.serializers import TransactionSerializer, CreateTransactionSerializer
 
 @api_view(['GET', 'POST'])
 def all_transactions(request):
     if request.method == 'GET':
         trans = Transaction.objects.all()
-        trans = TransactionsSerializer(trans, many=True)
+        trans = TransactionSerializer(trans, many=True)
         return Response(data=trans.data, status=status.HTTP_200_OK)
 
     elif request.method == "POST":

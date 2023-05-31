@@ -2,20 +2,17 @@ from rest_framework import serializers
 
 from transaction.models import Transaction
 
-class TransactionsSerializer(serializers.ModelSerializer):
+class TransactionSerializer(serializers.ModelSerializer):
+    customer_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Transaction
         exclude = (
-            'created_at', 'modified_at'
+            'created_at', 'modified_at', 'customer'
         )
-        depth = 1
 
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = (
-            'id', 'amount', 'paid_on', 'mode'
-        )
+    def get_customer_name(self, obj):
+        return obj.customer.name
 
 class CreateTransactionSerializer(serializers.ModelSerializer):
     class Meta:
