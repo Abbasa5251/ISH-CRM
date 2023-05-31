@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from customer.models import Customer
 from transaction.serializers import TransactionSerializer
+from customer.utils import total_transaction_amount_for_customer
 
 
 class CustomersSerializers(serializers.ModelSerializer):
@@ -20,15 +21,14 @@ class CustomersSerializers(serializers.ModelSerializer):
         return obj.transactions.all().count()
 
     def get_total_transaction_amount(self, obj):
-        amount = 0
-        for transaction in obj.transactions.all():
-            amount += transaction.amount
-        return amount
+        return total_transaction_amount_for_customer(obj)
 
 class CustomerSerializer(serializers.ModelSerializer):
     transactions = serializers.SerializerMethodField()
     transaction_count = serializers.SerializerMethodField()
     total_transaction_amount = serializers.SerializerMethodField()
+    total_transaction_debit_amount = serializers.SerializerMethodField()
+    total_transaction_credit_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Customer
@@ -37,17 +37,16 @@ class CustomerSerializer(serializers.ModelSerializer):
         )
 
     def get_transactions(self, obj):
-        data = []
-        for t in obj.transactions.all():
-            trans = TransactionSerializer(t)
-            data.append(trans.data)
-        return data
+        return [TransactionSerializer(t).data for t in obj.transactions.all()]
 
     def get_transaction_count(self, obj):
         return obj.transactions.all().count()
 
     def get_total_transaction_amount(self, obj):
-        amount = 0
-        for transaction in obj.transactions.all():
-            amount += transaction.amount
-        return amount
+        return total_transaction_amount_for_customer(obj)
+
+    def get_total_transaction_debit_amount(self, obj):
+        return total_transaction_amount_for_customer(obj, "DEBIT")
+
+    def get_total_transaction_credit_amount(self, obj):
+        return total_transaction_amount_for_customer(obj, "CREDIT")
