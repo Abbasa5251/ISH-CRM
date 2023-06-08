@@ -18,3 +18,18 @@ def all_transactions(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(request.data, status=status.HTTP_201_CREATED)
+
+@api_view(['DELETE'])
+def delete_transaction(request, pk):
+    if request.method == "DELETE":
+        try:
+            transactions = Transaction.objects.filter(pk=pk)
+            if len(transactions) == 0:
+                data = {"message": f"The transaction with id {pk} doen't exist"}
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            transaction = transactions.first()
+            transaction.delete()
+            data = {"message": f"The transaction with id {pk} has been successfully deleted!"}
+            return Response(data, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({"message": f"There was an error while deleting the data", "errors": e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
